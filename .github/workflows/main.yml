@@ -4,24 +4,29 @@ on:
   push:
     branches: [ main ]
   schedule:
-    # 每天北京时间早上 8 点左右自动执行一次（UTC时间 0点）
-    - cron: '0 0 * * *'
-  workflow_dispatch: # 允许手动点击运行
+    # 每天北京时间早上 8:05 自动执行 (UTC 0:05)
+    - cron: '5 0 * * *'
+  workflow_dispatch: 
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          python-version: '3.9'
+          node-version: '18'
+          cache: 'npm'
+
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
+        # 这里是核心：安装项目运行所需要的库
+        run: npm install
+
       - name: Run Sign Script
         env:
+          # 确保你在 Settings -> Secrets 里填了这两个变量
           CHAOXING_USERNAME: ${{ secrets.CHAOXING_USERNAME }}
           CHAOXING_PASSWORD: ${{ secrets.CHAOXING_PASSWORD }}
-        run: python main.py
+        run: npm start
