@@ -1,0 +1,27 @@
+name: Auto Sign
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    # 每天北京时间早上 8 点左右自动执行一次（UTC时间 0点）
+    - cron: '0 0 * * *'
+  workflow_dispatch: # 允许手动点击运行
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      - name: Run Sign Script
+        env:
+          CHAOXING_USERNAME: ${{ secrets.CHAOXING_USERNAME }}
+          CHAOXING_PASSWORD: ${{ secrets.CHAOXING_PASSWORD }}
+        run: python main.py
