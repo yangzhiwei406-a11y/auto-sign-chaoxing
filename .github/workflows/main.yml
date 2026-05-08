@@ -22,7 +22,7 @@ jobs:
 
       - name: Install dependencies
         # 这里是核心：安装项目运行所需要的库
-        run: npm install
+        run: npm install --no-audit --no-fund --quiet
 
       - name: Run Sign Script
         env:
