@@ -2,9 +2,7 @@ name: Auto Sign
 
 on:
   push:
-    branches: [ master ] # 注意：你这个分支叫 master
-  schedule:
-    - cron: '5 0 * * *'
+    branches: [ master ]
   workflow_dispatch: 
 
 jobs:
@@ -16,24 +14,19 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16' # 使用更兼容老项目的 Node 版本
+          node-version: '16'
 
       - name: Install Yarn
         run: npm install -g yarn
 
-       - name: Install dependencies
-        # 核心改动：设置环境变量关闭 SSL 校验，并忽略所有证书问题
+      - name: Install dependencies
         run: |
           export NODE_TLS_REJECT_UNAUTHORIZED=0
           yarn config set strict-ssl false
           yarn install --ignore-engines
-        # 使用 yarn 安装并忽略引擎检查，提速且防错
-        run: yarn install --ignore-engines
 
       - name: Run Sign Script
         env:
           CHAOXING_USERNAME: ${{ secrets.CHAOXING_USERNAME }}
           CHAOXING_PASSWORD: ${{ secrets.CHAOXING_PASSWORD }}
-        # 核心：TypeScript 项目需要先编译或直接用 ts-node 跑 src 里的代码
-        # 这里尝试直接运行项目定义的启动命令
         run: npm start
